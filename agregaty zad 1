@@ -1,0 +1,70 @@
+SELECT COUNT(id) AS liczba_rekordow FROM aggregates.batman;
+
+
+SELECT COUNT(age) AS liczba_rekordow_z_wiekiem FROM aggregates.batman;
+
+
+SELECT COUNT(*) AS liczba_mężczyzn_pow_40
+FROM aggregates.batman
+WHERE sex = 'M' AND age > 40;
+
+
+SELECT SUM(price) AS suma_cen FROM aggregates.batman;
+
+
+SELECT SUM(age) AS wiek_kobiet
+FROM aggregates.batman
+WHERE sex = 'F';
+
+
+SELECT SUM(price) AS wartosc_komputer_i_okno
+FROM aggregates.batman
+WHERE gift IN ('komputer', 'okno');
+
+
+SELECT MAX(price) AS maksymalna_cena FROM aggregates.batman;
+
+
+SELECT MAX(start_date) AS najpóźniejsza_data FROM aggregates.batman;
+
+
+SELECT last_name
+FROM aggregates.batman
+WHERE last_name IS NOT NULL
+ORDER BY last_name DESC
+LIMIT 1;
+
+
+SELECT MIN(price) AS minimalna_cena FROM aggregates.batman;
+
+
+SELECT MIN(start_date) AS najwcześniejsza_data FROM aggregates.batman;
+
+
+SELECT last_name
+FROM aggregates.batman
+WHERE last_name IS NOT NULL
+ORDER BY last_name ASC
+LIMIT 1;
+
+
+SELECT MIN(price) AS cena_min, MAX(price) AS cena_max
+FROM aggregates.batman;
+
+
+SELECT MAX(price) - MIN(price) AS roznica_cen
+FROM aggregates.batman;
+
+
+SELECT AVG(age) AS srednia_wiek FROM aggregates.batman;
+
+
+SELECT SUM(age) * 1.0 / COUNT(age) AS srednia_wiek
+FROM aggregates.batman;
+
+
+SELECT sex,
+       AVG(age) AS sredni_wiek
+FROM aggregates.batman
+WHERE sex IN ('F', 'M')
+GROUP BY sex;
