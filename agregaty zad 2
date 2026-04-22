@@ -1,0 +1,8 @@
+SELECT ROUND(AVG(age), 2) AS srednia_wieku
+FROM aggregates.batman;
+
+SELECT ABS(-3) AS wartosc_bezwzgledna;
+
+SELECT 2 * 3 AS wynik;
+
+SELECT 6 / 2 AS wynik;
