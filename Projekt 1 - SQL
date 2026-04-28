@@ -1,0 +1,152 @@
+CREATE DATABASE sklep_odziezowy;
+USE sklep_odziezowy;
+
+CREATE TABLE Producenci (
+    id_producenta INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa VARCHAR(100) NOT NULL,
+    adres VARCHAR(255) NOT NULL,
+    nip VARCHAR(15) NOT NULL UNIQUE,
+    data_umowy DATE NOT NULL
+);
+
+CREATE TABLE Produkty (
+    id_produktu INT AUTO_INCREMENT PRIMARY KEY,
+    id_producenta INT NOT NULL,
+    nazwa VARCHAR(100) NOT NULL,
+    opis TEXT,
+    cena_netto_zakupu DECIMAL(10,2) NOT NULL CHECK (cena_netto_zakupu >= 0),
+    cena_brutto_zakupu DECIMAL(10,2) NOT NULL,
+    cena_netto_sprzedazy DECIMAL(10,2) NOT NULL CHECK (cena_netto_sprzedazy >= 0),
+    cena_brutto_sprzedazy DECIMAL(10,2) NOT NULL,
+    vat DECIMAL(5,2) NOT NULL CHECK (vat >= 0),
+    FOREIGN KEY (id_producenta) REFERENCES Producenci(id_producenta)
+);
+
+CREATE TABLE Klienci (
+    id_klienta INT AUTO_INCREMENT PRIMARY KEY,
+    imie VARCHAR(50) NOT NULL,
+    nazwisko VARCHAR(50) NOT NULL,
+    adres VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Zamowienia (
+    id_zamowienia INT AUTO_INCREMENT PRIMARY KEY,
+    id_klienta INT NOT NULL,
+    id_produktu INT NOT NULL,
+    data_zamowienia DATE NOT NULL,
+    FOREIGN KEY (id_klienta) REFERENCES Klienci(id_klienta),
+    FOREIGN KEY (id_produktu) REFERENCES Produkty(id_produktu)
+);
+
+INSERT INTO Producenci (nazwa, adres, nip, data_umowy) VALUES
+('Nike', 'USA', '1234567890', '2020-01-01'),
+('Adidas', 'Germany', '1234567891', '2020-02-01'),
+('Puma', 'Germany', '1234567892', '2020-03-01'),
+('Reebok', 'UK', '1234567893', '2020-04-01');
+
+INSERT INTO Produkty (id_producenta, nazwa, opis, cena_netto_zakupu, cena_brutto_zakupu,
+cena_netto_sprzedazy, cena_brutto_sprzedazy, vat) VALUES
+(1,'Koszulka','Sportowa',50,61.5,80,98.4,23),
+(1,'Bluza','Ciepła',100,123,150,184.5,23),
+(1,'Spodnie','Dresowe',120,147.6,180,221.4,23),
+(2,'Buty','Running',200,246,300,369,23),
+(2,'Czapka','Letnia',30,36.9,50,61.5,23),
+(3,'Kurtka','Zimowa',300,369,450,553.5,23),
+(4,'Szalik','Wełniany',40,49.2,70,86.1,23),
+(1,'Skarpety','Bawełniane',10,12.3,20,24.6,23),
+(1,'Koszulka 2','Sportowa',60,73.8,90,110.7,23),
+(2,'Bluza 2','Ciepła',110,135.3,160,196.8,23),
+(3,'Spodnie 2','Dresowe',130,159.9,190,233.7,23),
+(4,'Buty 2','Running',210,258.3,310,381.3,23),
+(1,'Czapka 2','Letnia',35,43.05,55,67.65,23),
+(2,'Kurtka 2','Zimowa',320,393.6,470,578.1,23),
+(3,'Szalik 2','Wełniany',45,55.35,75,92.25,23),
+(4,'Skarpety 2','Bawełniane',12,14.76,22,27.06,23),
+(1,'Koszulka 3','Sportowa',55,67.65,85,104.55,23),
+(2,'Bluza 3','Ciepła',115,141.45,165,202.95,23),
+(3,'Spodnie 3','Dresowe',135,166.05,195,239.85,23),
+(4,'Buty 3','Running',220,270.6,320,393.6,23);
+
+INSERT INTO Klienci (imie, nazwisko, adres) VALUES
+('Mateusz','Lis','Gdańsk, ul. Długa 12'),
+('Julia','Baran','Gdynia, ul. Świętojańska 5'),
+('Kacper','Sikora','Sopot, ul. Bohaterów Monte Cassino 8'),
+('Zuzanna','Walczak','Warszawa, ul. Marszałkowska 10'),
+('Filip','Czarnecki','Kraków, ul. Floriańska 7'),
+('Maja','Sawicka','Poznań, ul. Półwiejska 15'),
+('Oskar','Kubiak','Wrocław, ul. Rynek 20'),
+('Lena','Piasecka','Łódź, ul. Piotrkowska 25'),
+('Igor','Majewski','Lublin, ul. Lipowa 3'),
+('Amelia','Malinowska','Katowice, ul. Chorzowska 9');
+
+INSERT INTO Zamowienia (id_klienta, id_produktu, data_zamowienia) VALUES
+(1,1,'2024-01-01'),
+(2,2,'2024-01-02'),
+(3,3,'2024-01-02'),
+(4,4,'2024-01-03'),
+(5,5,'2024-01-03'),
+(6,1,'2024-01-04'),
+(7,2,'2024-01-05'),
+(8,3,'2024-01-05'),
+(9,1,'2024-01-05'),
+(10,4,'2024-01-06');
+
+SELECT * FROM Produkty
+WHERE id_producenta = 1;
+
+SELECT * FROM Produkty
+WHERE id_producenta = 1
+ORDER BY nazwa ASC;
+
+SELECT AVG(cena_brutto_sprzedazy) AS srednia_cena
+FROM Produkty
+WHERE id_producenta = 1;
+
+SELECT *,
+CASE NTILE(2) OVER (ORDER BY cena_brutto_sprzedazy)
+    WHEN 1 THEN 'Tanie'
+    WHEN 2 THEN 'Drogie'
+END AS grupa
+FROM Produkty
+WHERE id_producenta = 1;
+
+SELECT DISTINCT p.nazwa
+FROM Zamowienia z
+JOIN Produkty p ON z.id_produktu = p.id_produktu;
+
+SELECT p.nazwa
+FROM Zamowienia z
+JOIN Produkty p ON z.id_produktu = p.id_produktu
+ORDER BY p.nazwa
+LIMIT 5;
+
+SELECT SUM(p.cena_brutto_sprzedazy) AS suma
+FROM Zamowienia z
+JOIN Produkty p ON z.id_produktu = p.id_produktu;
+
+SELECT z.*, p.nazwa
+FROM Zamowienia z
+JOIN Produkty p ON z.id_produktu = p.id_produktu
+ORDER BY z.data_zamowienia ASC;
+
+SELECT *
+FROM Produkty
+WHERE nazwa IS NULL
+   OR cena_netto_zakupu IS NULL
+   OR cena_brutto_zakupu IS NULL
+   OR cena_netto_sprzedazy IS NULL
+   OR cena_brutto_sprzedazy IS NULL
+   OR vat IS NULL;
+
+SELECT p.nazwa, p.cena_brutto_sprzedazy, COUNT(*) AS ilosc
+FROM Zamowienia z
+JOIN Produkty p ON z.id_produktu = p.id_produktu
+GROUP BY p.id_produktu, p.nazwa, p.cena_brutto_sprzedazy
+ORDER BY ilosc DESC
+LIMIT 1;
+
+SELECT data_zamowienia, COUNT(*) AS liczba
+FROM Zamowienia
+GROUP BY data_zamowienia
+ORDER BY liczba DESC
+LIMIT 1;
